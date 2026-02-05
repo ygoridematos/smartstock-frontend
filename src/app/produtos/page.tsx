@@ -2,7 +2,7 @@
 
 /**
  * Página de gerenciamento de produtos
- * Aqui fazemos o CRUD completo consumindo o backend (Render)
+ * CRUD completo consumindo API externa (backend no Render)
  */
 
 import { useEffect, useState } from "react";
@@ -11,54 +11,63 @@ import { useEffect, useState } from "react";
 type Product = {
   id: string;
   name: string;
-  price?: number; // opcional para evitar crash se vier undefined
-  quantity?: number; // opcional pelo mesmo motivo
+  price?: number;
+  quantity?: number;
 };
 
-/** ================= URL DA API ================= */
-// ⚠️ TROQUE se sua URL do Render mudar
-const API_URL = "https://smartstock-backend-kevj.onrender.com/products";
+/** ================= URL BASE DA API =================
+ * Em desenvolvimento → usa .env.local
+ * Em produção (Vercel) → usa variável de ambiente configurada lá
+ */
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333";
+
+/** Endpoint de produtos separado para evitar repetição */
+const PRODUCTS_URL = `${API_BASE_URL}/products`;
 
 export default function ProdutosPage() {
   /** ================= STATES ================= */
 
-  // Lista de produtos
   const [products, setProducts] = useState<Product[]>([]);
 
-  // Campos do formulário
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
 
-  // Produto em edição (null = modo criação)
   const [editingId, setEditingId] = useState<string | null>(null);
-
-  // Controle de carregamento
   const [loading, setLoading] = useState(false);
 
-  /** ================= BUSCAR PRODUTOS ================= */
+  /** ================= FUNÇÃO PARA BUSCAR PRODUTOS ================= */
   const fetchProducts = async () => {
     try {
       setLoading(true);
 
-      const res = await fetch(API_URL);
+      const res = await fetch(PRODUCTS_URL);
+
+      // Se a API estiver fora do ar ou der erro HTTP
+      if (!res.ok) {
+        throw new Error("Erro ao buscar produtos da API");
+      }
+
       const data = await res.json();
 
-      // Garante que sempre teremos array
-      setProducts(data.data || []);
+      // Backend pode retornar { data: [...] } ou direto []
+      const productList = Array.isArray(data) ? data : data.data;
+
+      setProducts(productList || []);
     } catch (error) {
       console.error("Erro ao buscar produtos:", error);
+      alert("Não foi possível carregar os produtos. Verifique o backend.");
     } finally {
       setLoading(false);
     }
   };
 
-  /** ================= CARREGA AO ABRIR A PÁGINA ================= */
+  /** ================= CARREGA PRODUTOS AO ABRIR ================= */
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  /** ================= LIMPAR FORMULÁRIO ================= */
+  /** ================= LIMPA FORMULÁRIO ================= */
   const resetForm = () => {
     setName("");
     setPrice("");
@@ -66,11 +75,10 @@ export default function ProdutosPage() {
     setEditingId(null);
   };
 
-  /** ================= CRIAR OU ATUALIZAR ================= */
+  /** ================= CRIAR OU ATUALIZAR PRODUTO ================= */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validação básica
     if (!name || !price || !quantity) {
       alert("Preencha todos os campos!");
       return;
@@ -85,32 +93,31 @@ export default function ProdutosPage() {
     try {
       setLoading(true);
 
-      if (editingId) {
-        /** ===== ATUALIZAR ===== */
-        await fetch(`${API_URL}/${editingId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(productData),
-        });
-      } else {
-        /** ===== CRIAR ===== */
-        await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(productData),
-        });
+      const url = editingId ? `${PRODUCTS_URL}/${editingId}` : PRODUCTS_URL;
+
+      const method = editingId ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(productData),
+      });
+
+      if (!res.ok) {
+        throw new Error("Erro ao salvar produto");
       }
 
       resetForm();
       fetchProducts();
     } catch (error) {
       console.error("Erro ao salvar produto:", error);
+      alert("Erro ao salvar produto. Verifique os dados.");
     } finally {
       setLoading(false);
     }
   };
 
-  /** ================= EDITAR PRODUTO ================= */
+  /** ================= CARREGA DADOS NO MODO EDIÇÃO ================= */
   const handleEdit = (product: Product) => {
     setName(product.name);
     setPrice(String(product.price ?? ""));
@@ -118,20 +125,25 @@ export default function ProdutosPage() {
     setEditingId(product.id);
   };
 
-  /** ================= DELETAR PRODUTO ================= */
+  /** ================= DELETA PRODUTO ================= */
   const handleDelete = async (id: string) => {
     if (!confirm("Tem certeza que deseja deletar?")) return;
 
     try {
       setLoading(true);
 
-      await fetch(`${API_URL}/${id}`, {
+      const res = await fetch(`${PRODUCTS_URL}/${id}`, {
         method: "DELETE",
       });
+
+      if (!res.ok) {
+        throw new Error("Erro ao deletar produto");
+      }
 
       fetchProducts();
     } catch (error) {
       console.error("Erro ao deletar:", error);
+      alert("Erro ao deletar produto.");
     } finally {
       setLoading(false);
     }
@@ -140,7 +152,7 @@ export default function ProdutosPage() {
   /** ================= RENDER ================= */
   return (
     <div className="p-8 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">📦 Gerenciamento de Produtos</h1>
+      <h1 className="text-3xl font-bold mb-6">Gerenciamento de Produtos</h1>
 
       {/* ================= FORMULÁRIO ================= */}
       <form
@@ -173,7 +185,8 @@ export default function ProdutosPage() {
 
         <button
           type="submit"
-          className="bg-blue-600 text-white rounded p-2 hover:bg-blue-700"
+          disabled={loading}
+          className="bg-blue-600 text-white rounded p-2 hover:bg-blue-700 disabled:opacity-50"
         >
           {editingId ? "Atualizar" : "Cadastrar"}
         </button>
@@ -196,17 +209,13 @@ export default function ProdutosPage() {
             {products.map((product) => (
               <tr key={product.id} className="border-t text-center">
                 <td className="p-2">{product.name}</td>
-
-                {/* Proteção contra undefined */}
                 <td className="p-2">
                   R${" "}
                   {typeof product.price === "number"
                     ? product.price.toFixed(2)
                     : "0.00"}
                 </td>
-
                 <td className="p-2">{product.quantity ?? 0}</td>
-
                 <td className="p-2 flex justify-center gap-2">
                   <button
                     onClick={() => handleEdit(product)}
