@@ -1,8 +1,11 @@
 import { redirect } from "next/navigation";
 
 /**
- * Rota raiz "/"
- * Redireciona imediatamente para a página principal do sistema
+ * PÁGINA: Root (/)
+ * OBJETIVO: Redirecionamento Automático
+ * * Como a aplicação foca na gestão de produtos, não temos uma "Landing Page".
+ * Por isso, ao acessar a raiz, o usuário é imediatamente enviado para
+ * o painel principal em /produtos.
  */
 export default function Home() {
   redirect("/produtos");

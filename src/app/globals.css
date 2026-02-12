@@ -1,10 +1,14 @@
 @import "tailwindcss";
 
+/* Definição de variáveis CSS globais.
+  O Tailwind utiliza estas variáveis para compor o tema.
+*/
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
+/* Configuração do tema inline do Tailwind v4 (se estiver usando v4) */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -12,6 +16,7 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Suporte a modo escuro (Dark Mode) */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -19,8 +24,14 @@
   }
 }
 
+/* Estilos Base
+  Aplicados diretamente ao body para garantir consistência em toda a app.
+*/
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  /* Suavização de fontes para melhor leitura */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
