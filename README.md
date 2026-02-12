@@ -1,30 +1,33 @@
-# 📦 SmartStock - Frontend
+📦 SmartStock Dashboard - Gestão de Estoque Moderna
+O SmartStock Dashboard é uma interface administrativa de alta performance construída para gerir inventários com simplicidade e rapidez. A aplicação consome a API oficial hospedada no Render, entregando uma experiência de Single Page Application (SPA) moderna.
 
-Sistema de gerenciamento de estoque simples e eficiente. Este projeto compõe a interface do usuário (Client-side), permitindo visualizar, criar, editar e excluir produtos através de uma comunicação RESTful com o Backend.
+🚀 Tecnologias Utilizadas
+Next.js 15: Utilização do novo App Router para roteamento e carregamento otimizado de páginas.
 
-## 🚀 Tecnologias Utilizadas
+TypeScript: Desenvolvimento guiado por tipos para garantir estabilidade e código auto-documentado.
 
-- **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
-- **Linguagem:** TypeScript
-- **Estilização:** Tailwind CSS
-- **Ícones:** Lucide React (Sugestão para melhoria visual futura)
-- **Gerenciamento de Estado:** React Hooks (useState, useEffect)
+Tailwind CSS: Design system utilitário focado em produtividade e UI limpa e moderna.
 
-## ⚙️ Funcionalidades
+Lucide React: Ícones vetoriais leves para melhor acessibilidade e visual.
 
-- **Listagem de Produtos:** Visualização clara com tabela responsiva.
-- **CRUD Completo:** Criação, Leitura, Atualização e Deleção de itens.
-- **Feedback Visual:** Indicadores de carregamento (loading) e alertas de sucesso/erro.
-- **Validação:** Verificação básica de campos obrigatórios no frontend.
+Vercel Hosting: Deploy contínuo (CI/CD) com performance global.
 
-## 📂 Estrutura de Pastas Importantes
+⚙️ Funcionalidades de Negócio
+Inventário em Tempo Real: Operações de criação, edição e exclusão refletidas instantaneamente na base de dados.
 
-```bash
-src/
-├── app/
-│   ├── produtos/      # Página principal do CRUD
-│   ├── page.tsx       # Redirecionamento da raiz
-│   └── layout.tsx     # Layout global (fontes, meta tags)
-├── services/
-│   └── api.ts         # Configuração centralizada da API
-```
+Tratamento de Estados Complexos: Loading states e empty states integrados para uma experiência fluida.
+
+Conexão Dinâmica: Configuração transparente para consumir a API em ambiente local ou em produção no Render.
+
+Interface Responsiva: Painel totalmente adaptável para dispositivos móveis, tablets e desktops.
+
+🏁 Como Rodar Localmente
+Clone e Instale: git clone https://github.com/ygoridematos/smartstock-frontend.git cd smartstock-frontend npm install
+
+Configuração da API: Crie um arquivo .env.local na raiz do projeto: NEXT_PUBLIC_API_URL=https://smartstock-backend-kevj.onrender.com
+
+Inicie o Servidor Local: npm run dev
+
+Acesse a versão live do projeto: https://smartstock-frontend-wheat.vercel.app
+
+Desenvolvido por Ygor I. de Matos.
