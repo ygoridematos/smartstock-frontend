@@ -1,5 +1,5 @@
 // src/services/api.ts
-export const API_URL = "https://smartstock-backend-kevj.onrender.com";
+export const API_URL = "http://localhost:3333";
 
 export const ENDPOINTS = {
   // Exemplo de estrutura – ajuste conforme sua API
